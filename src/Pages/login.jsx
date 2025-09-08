@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { axiosPublic } from "../api/AxiosInstance";
+import { useAuth } from "../context/AuthContext";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState("");
+  const {login}=useAuth()
 
   const navigate= useNavigate()
 
@@ -24,9 +26,11 @@ const LoginPage = () => {
     try {
       const res = await axiosPublic.post("api/auth/login/verify-otp/", { email, code: otp });
       const { access, refresh, user } = res.data;
-      localStorage.setItem("access", access);
-      localStorage.setItem("refresh", refresh);
-      localStorage.setItem("user", JSON.stringify(user));
+        login({
+      user: user, 
+      access: access,
+      refresh:refresh,
+    });
       setMessage("Login successful!");
       navigate('/trains')
     } catch (err) {

@@ -1,13 +1,25 @@
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
 import { axiosPrivate } from "../api/AxiosInstance";
+import {
+  Paper,
+  Typography,
+  Box,
+  Button,
+  TextField,
+  Divider,
+  Grid,
+  Alert,
+  CircularProgress,
+} from "@mui/material";
 
 const BookTrainPage = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const {
     tripId,
+    train,
+    train_number,
     sourceStopId,
     destinationStopId,
     fromCode,
@@ -23,7 +35,9 @@ const BookTrainPage = () => {
 
   if (!state) {
     return (
-      <p className="text-red-600 text-center mt-10">No booking data passed.</p>
+      <Typography color="error" align="center" sx={{ mt: 6 }}>
+        No booking data passed.
+      </Typography>
     );
   }
 
@@ -47,61 +61,119 @@ const BookTrainPage = () => {
         seats,
       });
 
-      setSuccess("Booking successful!");
+      setSuccess(" Booking successful!");
       setTimeout(() => navigate("/my-bookings"), 1500);
     } catch (err) {
       console.error(err);
-      setError("Booking failed. Try again.");
+      setError("Booking failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <h1 className="text-2xl font-bold text-center mb-6">Confirm Booking</h1>
+    <Box sx={{ minHeight: "100vh", bgcolor: "grey.100", py: 6 }}>
+      <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
+        Confirm Your Booking
+      </Typography>
 
-      <div className="max-w-lg mx-auto bg-white p-6 shadow rounded-xl">
-        <p>
-          <strong>Trip ID:</strong> {tripId}
-        </p>
-        <p>
-          <strong>From:</strong> {fromCode}
-        </p>
-        <p>
-          <strong>To:</strong> {toCode}
-        </p>
-        <p>
-          <strong>Date:</strong> {travelDate}
-        </p>
-        <p>
-          <strong>Available Seats:</strong> {availableSeats}
-        </p>
+      <Paper
+        elevation={4}
+        sx={{
+          maxWidth: 600,
+          mx: "auto",
+          p: 4,
+          borderRadius: 3,
+          bgcolor: "background.paper",
+        }}
+      >
+        <Typography variant="h6" gutterBottom>
+          Trip Details
+        </Typography>
+        <Divider sx={{ mb: 2 }} />
 
-        <form onSubmit={handleBooking} className="mt-4 flex flex-col gap-4">
-          {error && <p className="text-red-600">{error}</p>}
-          {success && <p className="text-green-600">{success}</p>}
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            <Typography variant="body2" color="text.secondary">
+              Trip ID
+            </Typography>
+            <Typography>{tripId}</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="body2" color="text.secondary">
+              Train
+            </Typography>
+            <Typography>
+              {train} ({train_number})
+            </Typography>
+          </Grid>
 
-          <input
+          <Grid item xs={6}>
+            <Typography variant="body2" color="text.secondary">
+              From
+            </Typography>
+            <Typography>{fromCode}</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="body2" color="text.secondary">
+              To
+            </Typography>
+            <Typography>{toCode}</Typography>
+          </Grid>
+
+          <Grid item xs={6}>
+            <Typography variant="body2" color="text.secondary">
+              Date
+            </Typography>
+            <Typography>{travelDate}</Typography>
+          </Grid>
+          <Grid item xs={6}>
+            <Typography variant="body2" color="text.secondary">
+              Available Seats
+            </Typography>
+            <Typography>{availableSeats}</Typography>
+          </Grid>
+        </Grid>
+
+        <Box component="form" onSubmit={handleBooking} sx={{ mt: 4 }}>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
+          {success && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {success}
+            </Alert>
+          )}
+
+          <TextField
             type="number"
-            min="1"
-            max={availableSeats}
+            label="Number of Seats"
             value={seats}
             onChange={(e) => setSeats(Number(e.target.value))}
-            className="border p-2 rounded"
+            inputProps={{ min: 1, max: availableSeats }}
+            fullWidth
             required
+            sx={{ mb: 3 }}
           />
 
-          <button
+          <Button
             type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+            size="large"
             disabled={loading}
-            className="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+            startIcon={
+              loading ? <CircularProgress size={20} color="inherit" /> : null
+            }
           >
             {loading ? "Booking..." : "Confirm Booking"}
-          </button>
-        </form>
-      </div>
-    </div>
+          </Button>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
 

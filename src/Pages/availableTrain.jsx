@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { axiosPublic } from "../api/AxiosInstance";
+import ForwardTwoToneIcon from '@mui/icons-material/ForwardTwoTone';
+
 
 const AvailableTrainsPage = () => {
   const [stations, setStations] = useState([]);
@@ -16,7 +18,7 @@ const AvailableTrainsPage = () => {
     const fetchStations = async () => {
       try {
         const res = await axiosPublic.get("/api/stations/");
-        setStations(res.data.results || res.data);
+        setStations(res.data.results );
       } catch (err) {
         console.error("Failed to load stations", err);
       }
@@ -50,7 +52,9 @@ const AvailableTrainsPage = () => {
       const res = await axiosPublic.get("/api/trips/search/", {
         params: { from, to, date },
       });
-      setTrips(res.data.results || res.data);
+      console.log("ressss",res.data);
+      
+      setTrips( res.data);
     } catch (err) {
       setError("Failed to fetch trips. Please try again.");
     } finally {
@@ -64,54 +68,59 @@ const AvailableTrainsPage = () => {
         Search Available Trains
       </h1>
 
-      <form
-        onSubmit={handleSearch}
-        className="max-w-2xl mx-auto bg-white shadow-md rounded-xl p-6 flex flex-col gap-4"
-      >
-        <div className="flex flex-col md:flex-row gap-4">
-          <select
-            value={from}
-            onChange={(e) => setFrom(e.target.value)}
-            className="flex-1 border p-2 rounded-lg"
-            required
-          >
-            <option value="">From Station</option>
-            {stations.map((s) => (
-              <option key={s.id} value={s.code}>
-                {s.code} - {s.name}
-              </option>
-            ))}
-          </select>
+     <form
+  onSubmit={handleSearch}
+  className="max-w-2xl mx-auto bg-white shadow-md rounded-xl p-6 flex flex-col gap-4"
+>
+  <div className="flex flex-col md:flex-row gap-4 items-center">
+    <select
+      value={from}
+      onChange={(e) => setFrom(e.target.value)}
+      className="flex-1 border p-2 rounded-lg"
+      required
+    >
+      <option value="">From Station</option>
+      {stations.map((s) => (
+        <option key={s.id} value={s.code}>
+          {s.code} - {s.name}
+        </option>
+      ))}
+    </select>
 
-          <select
-            value={to}
-            onChange={(e) => setTo(e.target.value)}
-            className="flex-1 border p-2 rounded-lg"
-            required
-          >
-            <option value="">To Station</option>
-            {stations.map((s) => (
-              <option key={s.id} value={s.code}>
-                {s.code} - {s.name}
-              </option>
-            ))}
-          </select>
+    <div className="hidden md:flex items-center text-gray-500">
+      <ForwardTwoToneIcon />
+    </div>
 
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="flex-1 border p-2 rounded-lg"
-          />
-        </div>
+    <select
+      value={to}
+      onChange={(e) => setTo(e.target.value)}
+      className="flex-1 border p-2 rounded-lg"
+      required
+    >
+      <option value="">To Station</option>
+      {stations.map((s) => (
+        <option key={s.id} value={s.code}>
+          {s.code} - {s.name}
+        </option>
+      ))}
+    </select>
 
-        <button
-          type="submit"
-          className="bg-blue-600 text-white rounded-lg py-2 px-4 hover:bg-blue-700 transition"
-        >
-          {loading ? "Searching..." : "Search"}
-        </button>
-      </form>
+    <input
+      type="date"
+      value={date}
+      onChange={(e) => setDate(e.target.value)}
+      className="flex-1 border p-2 rounded-lg"
+    />
+  </div>
+
+  <button
+    type="submit"
+    className="bg-blue-600 text-white rounded-lg py-2 px-4 hover:bg-blue-700 transition"
+  >
+    {loading ? "Searching..." : "Search"}
+  </button>
+</form>
+
 
       <div className="max-w-4xl mx-auto mt-8">
         {error && <p className="text-red-600">{error}</p>}
@@ -160,6 +169,8 @@ const AvailableTrainsPage = () => {
                           to={`/book/${trip.id}`}
                           state={{
                             tripId: trip.id,
+                            train:trip.train.name,
+                            train_number:trip.train.number,
                             sourceStopId: trip.stops_detail.find(
                               (s) => s.station.code === from
                             )?.id,
