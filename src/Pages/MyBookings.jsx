@@ -65,7 +65,7 @@ const MyBookings = () => {
           You have no bookings yet.
         </Typography>
       ) : (
-        <Grid container spacing={3}>
+        <Grid container spacing={6}>
           {history.map((b) => {
             const qrData = {
               passenger: b.passenger,
