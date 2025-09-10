@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { axiosPublic } from "../api/AxiosInstance";
 import { useAuth } from "../context/AuthContext";
 
@@ -12,6 +12,9 @@ const LoginPage = ({ embedded = false }) => {
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState("");
   const { login } = useAuth();
+  const location = useLocation();
+  const fromBooking = location.state?.fromBooking;
+  const tripId=location.state?.tripId
 
   const navigate = useNavigate();
 
@@ -39,7 +42,11 @@ const LoginPage = ({ embedded = false }) => {
       const { access, refresh, user } = res.data;
       login({ user, access, refresh });
       setMessage("Login successful!");
-      navigate("/trains");
+        if (fromBooking) {
+    navigate(`/book/${tripId}`, { state: fromBooking });
+  } else {
+    navigate("/trains");
+  }
     } catch (err) {
       setMessage(err.response?.data?.detail || "Error verifying OTP");
     }
@@ -54,7 +61,11 @@ const LoginPage = ({ embedded = false }) => {
       const { access, refresh, user } = res.data;
       login({ user, access, refresh });
       setMessage("Login successful!");
-      navigate("/trains");
+      if (fromBooking) {
+    navigate(`/book/${tripId}`, { state: fromBooking });
+  } else {
+    navigate("/trains");
+  }
     } catch (err) {
       setMessage(err.response?.data?.detail || "Invalid username or password");
     }

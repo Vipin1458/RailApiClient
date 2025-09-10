@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { axiosPublic } from "../api/AxiosInstance";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const SignupPage = () => {
   const [form, setForm] = useState({
@@ -14,6 +14,7 @@ const SignupPage = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState("");
+  const navigate=useNavigate()
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -37,7 +38,7 @@ const SignupPage = () => {
       });
       setMessage(res.data.detail);
       setOtpSent(false);
-      Navigate('/login')
+      navigate('/login')
     } catch (err) {
       setMessage(err.response?.data?.detail || "Error verifying OTP");
     }

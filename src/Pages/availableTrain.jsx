@@ -60,9 +60,10 @@ const AvailableTrainsPage = () => {
       setLoading(false);
     }
   };
+  const today = new Date().toISOString().split("T")[0]
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-white p-6">
       <h1 className="text-2xl font-bold text-center mb-6">
         Search Available Trains
       </h1>
@@ -103,10 +104,11 @@ const AvailableTrainsPage = () => {
         </option>
       ))}
     </select>
-
+ 
     <input
       type="date"
       value={date}
+      min={today}
       onChange={(e) => setDate(e.target.value)}
       className="flex-1 border p-2 rounded-lg"
     />

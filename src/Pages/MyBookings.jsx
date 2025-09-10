@@ -25,6 +25,7 @@ const MyBookings = () => {
   const fetchBookingHistory = async () => {
     try {
       const res = await axiosPrivate.get("/api/bookings/");
+      
       setHistory(res.data.results || []);
     } catch (err) {
       console.error(err);
@@ -68,8 +69,9 @@ const MyBookings = () => {
         <Grid container spacing={6}>
           {history.map((b) => {
             const qrData = {
-              passenger: b.passenger,
               train: b.trip.train.name,
+              booked_by:b.booker,
+              passergers:b.passenger_details,
               train_number: b.trip.train.number,
               from: b.source_stop.station.code,
               to: b.destination_stop.station.code,
@@ -99,7 +101,7 @@ const MyBookings = () => {
                       <strong>Date:</strong> {b.travel_date}
                     </Typography>
                     <Typography variant="body2">
-                      <strong>Seats:</strong> {b.seats}
+                      <strong>Seats:</strong> {b.passenger_details.length}
                     </Typography>
 
                     <Box mt={1}>
